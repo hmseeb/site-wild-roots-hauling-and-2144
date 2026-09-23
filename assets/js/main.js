@@ -130,15 +130,23 @@
   }
 
   /* ----------------------------------------------------------------------
-     Quote form
-     Builds a pre-filled email to the business (no backend, no third-party
-     service, no environment variables required).
+     Contact / quote forms
+     Every form marked with [data-ghl-form] posts to /api/ghl-lead, which
+     creates or updates the contact in the GoHighLevel sub-account, tags it
+     "website-lead" and stores the message. A thank-you note is shown in place.
      ---------------------------------------------------------------------- */
   function initForm() {
-    var form = document.getElementById("quote-form");
+    Array.prototype.forEach.call(document.querySelectorAll("[data-ghl-form]"), initLeadForm);
+  }
+
+  function initLeadForm(form) {
     if (!form) return;
 
-    var status = document.getElementById("form-status");
+    var status = form.querySelector(".form-status") || document.getElementById("form-status");
+    var submitBtn = form.querySelector('button[type="submit"]');
+    var submitLabel = submitBtn ? submitBtn.textContent : "";
+    var endpoint = form.getAttribute("data-endpoint") || "/api/ghl-lead";
+    var formName = form.getAttribute("data-form-name") || "Website Form";
 
     function setError(field, message) {
       var wrap = field.closest(".field");
@@ -217,35 +225,63 @@
       var data = new FormData(form);
       function get(name) { return String(data.get(name) || "").trim(); }
 
-      var lines = [
-        "New quote request from the Wild Roots Hauling website",
-        "",
-        "Name: " + get("name"),
-        "Phone: " + get("phone"),
-        "Email: " + get("email"),
-        "Service address / area: " + (get("address") || "Not provided"),
-        "Service needed: " + (get("service") || "Not specified"),
-        "Estimated load size: " + (get("load") || "Not specified"),
-        "Preferred timing: " + (get("timing") || "Not specified"),
-        "",
-        "Details:",
-        get("details") || "No additional details provided."
-      ];
+      var firstName = get("name").split(" ")[0];
+      var payload = {
+        formName: formName,
+        pageUrl: window.location.href,
+        name: get("name"),
+        phone: get("phone"),
+        email: get("email"),
+        address: get("address"),
+        service: get("service"),
+        load: get("load"),
+        timing: get("timing"),
+        message: get("details") || get("message"),
+        company_website: get("company_website")
+      };
 
-      var subject = "Quote request — " + get("name") + " (" + (get("service") || "Junk removal") + ")";
-      var mailto =
-        "mailto:" + BUSINESS_EMAIL +
-        "?subject=" + encodeURIComponent(subject) +
-        "&body=" + encodeURIComponent(lines.join("\n"));
+      function setBusy(busy) {
+        if (!submitBtn) return;
+        submitBtn.disabled = busy;
+        submitBtn.textContent = busy ? "Sending…" : submitLabel;
+      }
 
-      showStatus(
-        "ok",
-        "Thanks, " + get("name").split(" ")[0] + "! Your email app is opening with your request ready to send. " +
-        "If nothing opens, email us at " + BUSINESS_EMAIL + " or call +1 (458) 867-8037."
-      );
+      setBusy(true);
+      showStatus("ok", "Sending your request…");
 
-      window.location.href = mailto;
-      form.reset();
+      fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      })
+        .then(function (res) {
+          return res.json().catch(function () { return {}; }).then(function (body) {
+            if (!res.ok || !body || body.ok !== true) {
+              throw new Error((body && body.error) || "Request failed");
+            }
+            return body;
+          });
+        })
+        .then(function () {
+          setBusy(false);
+          showStatus(
+            "ok",
+            "Thanks, " + firstName + "! Your request is in — we've got your details and will get back to you " +
+            "with a price shortly. Need us sooner? Call or text +1 (458) 867-8037."
+          );
+          form.reset();
+          if (status && status.scrollIntoView) {
+            status.scrollIntoView({ behavior: "smooth", block: "center" });
+          }
+        })
+        .catch(function () {
+          setBusy(false);
+          showStatus(
+            "err",
+            "Sorry — we couldn't send that just now. Please call or text +1 (458) 867-8037, " +
+            "or email us at " + BUSINESS_EMAIL + " and we'll take care of you."
+          );
+        });
     });
   }
 

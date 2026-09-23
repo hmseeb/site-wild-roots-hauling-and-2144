@@ -1,7 +1,8 @@
 # Wild Roots Hauling and Junk Removal — Website
 
 A production-ready, five-page marketing site for Wild Roots Hauling and Junk Removal.
-Built with vanilla HTML, CSS and JavaScript — no build step, no dependencies, no external APIs.
+Built with vanilla HTML, CSS and JavaScript — no build step and no dependencies. The only
+backend is a single serverless function that delivers form submissions to GoHighLevel.
 
 ## Contact details used throughout the site
 
@@ -32,6 +33,8 @@ Built with vanilla HTML, CSS and JavaScript — no build step, no dependencies, 
 ├── favicon.svg          # favicon placeholder
 ├── robots.txt
 ├── sitemap.xml
+├── api/
+│   └── ghl-lead.js      # serverless form handler → GoHighLevel sub-account
 └── assets/
     ├── css/styles.css   # all styling, design tokens, responsive rules
     ├── js/main.js       # nav, FAQ accordion, scroll reveal, form handling
@@ -40,13 +43,32 @@ Built with vanilla HTML, CSS and JavaScript — no build step, no dependencies, 
 
 ## How the quote form works
 
-The site is fully static, so there is no server to receive form posts. On submit, `main.js`
-validates the fields and then opens the visitor's email client with a pre-filled message
-addressed to `wildrootshauling@gmail.com`. Phone and email are also presented directly on
-every page so no one is dependent on the form.
+Every contact/quote form on the site is marked with `data-ghl-form`. On submit, `main.js`
+validates the fields and POSTs them as JSON to `/api/ghl-lead` (the serverless function in
+`api/ghl-lead.js`), then shows a thank-you message in place — the form design is unchanged.
 
-To switch to a hosted form backend later, replace the `mailto:` handoff inside `initForm()`
-in `assets/js/main.js` with a `fetch()` POST to the chosen endpoint.
+`api/ghl-lead.js` creates or updates the contact in the GoHighLevel sub-account
+(location `v6ItU2KQfXshCzO4FilA`) with first name, last name, phone and email, and then:
+
+- sets the contact custom field **Lead Source** to `Website`
+- sets the contact custom field **Website Form** to the submitting form's name
+  (`data-form-name`, e.g. `Quote Request Form`)
+- stores the visitor's message on the contact (a **Message** custom field plus a timeline note
+  with the full submission: address, service, load size and preferred timing)
+- applies the tag **website-lead**
+
+Any of those custom fields that the sub-account does not have yet are created automatically
+on the first submission.
+
+### Environment variables
+
+| Variable | Purpose |
+| --- | --- |
+| `GHL_PRIVATE_INTEGRATION_TOKEN` | **Required.** GoHighLevel private integration / access token for the sub-account (`GHL_API_TOKEN` and `GHL_API_KEY` are accepted as aliases). The token stays server-side and is never exposed to the browser. |
+| `GHL_LOCATION_ID` | Optional override; defaults to `v6ItU2KQfXshCzO4FilA`. |
+
+If the API call fails, the visitor is shown the phone number and email address as a fallback.
+Phone and email also appear directly on every page, so no one depends on the form.
 
 ## Features
 
