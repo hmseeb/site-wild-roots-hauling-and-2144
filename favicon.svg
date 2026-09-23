@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Wild Roots Hauling and Junk Removal">
+  <rect width="64" height="64" rx="14" fill="#1f4d36"/>
+  <path d="M32 12c5.8 4.1 9 9.2 9 14.6 0 5-2.8 8.8-7 10.6v3.3h-4v-3.3c-4.2-1.8-7-5.6-7-10.6C23 21.2 26.2 16.1 32 12z" fill="#f2a63b"/>
+  <path d="M32 40.5v11M32 45c-3.4 0-6.2-1.6-8.3-4.6M32 47.5c3.4 0 6.2-1.6 8.3-4.6" fill="none" stroke="#e6f1ea" stroke-width="2.6" stroke-linecap="round"/>
+</svg>
