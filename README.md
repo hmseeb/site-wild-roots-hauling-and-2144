@@ -1,8 +1,8 @@
 # Wild Roots Hauling and Junk Removal — Website
 
 A production-ready, five-page marketing site for Wild Roots Hauling and Junk Removal.
-Built with vanilla HTML, CSS and JavaScript — no build step and no dependencies. The only
-backend is a single serverless function that delivers form submissions to GoHighLevel.
+Built with vanilla HTML, CSS and JavaScript — no build step, no dependencies and no backend.
+Form submissions are delivered to LeadrVision.
 
 ## Contact details used throughout the site
 
@@ -33,8 +33,6 @@ backend is a single serverless function that delivers form submissions to GoHigh
 ├── favicon.svg          # favicon placeholder
 ├── robots.txt
 ├── sitemap.xml
-├── api/
-│   └── ghl-lead.js      # serverless form handler → GoHighLevel sub-account
 └── assets/
     ├── css/styles.css   # all styling, design tokens, responsive rules
     ├── js/main.js       # nav, FAQ accordion, scroll reveal, form handling
@@ -43,31 +41,28 @@ backend is a single serverless function that delivers form submissions to GoHigh
 
 ## How the quote form works
 
-Every contact/quote form on the site is marked with `data-ghl-form`. On submit, `main.js`
-validates the fields and POSTs them as JSON to `/api/ghl-lead` (the serverless function in
-`api/ghl-lead.js`), then shows a thank-you message in place — the form design is unchanged.
+Every contact/quote form on the site is marked with `data-lead-form` and posts to the
+LeadrVision forms endpoint named in its own `action` attribute:
 
-`api/ghl-lead.js` creates or updates the contact in the GoHighLevel sub-account
-(location `v6ItU2KQfXshCzO4FilA`) with first name, last name, phone and email, and then:
+```
+https://vision.leadrai.com/api/forms/a0a587b54f7e8cadafac1d1f9f7c9493
+```
 
-- sets the contact custom field **Lead Source** to `Website`
-- sets the contact custom field **Website Form** to the submitting form's name
-  (`data-form-name`, e.g. `Quote Request Form`)
-- stores the visitor's message on the contact (a **Message** custom field plus a timeline note
-  with the full submission: address, service, load size and preferred timing)
-- applies the tag **website-lead**
+On submit, `main.js` validates the fields and POSTs them as JSON to that same URL, then shows
+a thank-you message in place — the form design is unchanged. Each form also carries:
 
-Any of those custom fields that the sub-account does not have yet are created automatically
-on the first submission.
+- `_form` — a short human name for the form (e.g. `Quote request`)
+- `_page` — set to `window.location.href` on page load, so the visitor returns to the right page
+- `_gotcha` — a hidden honeypot field that real people never fill in
 
-### Environment variables
+Every visible field uses a human-readable `name` (`Service needed`, `Preferred timing`, and so
+on), with `name`, `email` and `phone` kept exactly as those three names.
 
-| Variable | Purpose |
-| --- | --- |
-| `GHL_PRIVATE_INTEGRATION_TOKEN` | **Required.** GoHighLevel private integration / access token for the sub-account (`GHL_API_TOKEN` and `GHL_API_KEY` are accepted as aliases). The token stays server-side and is never exposed to the browser. |
-| `GHL_LOCATION_ID` | Optional override; defaults to `v6ItU2KQfXshCzO4FilA`. |
+Because the `action` and `method="POST"` are on the form itself, submission still works with
+JavaScript disabled: the visitor comes back to the page with `?submitted=1` and `main.js` shows
+the same confirmation message.
 
-If the API call fails, the visitor is shown the phone number and email address as a fallback.
+If the request fails, the visitor is shown the phone number and email address as a fallback.
 Phone and email also appear directly on every page, so no one depends on the form.
 
 ## Features

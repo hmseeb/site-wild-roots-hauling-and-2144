@@ -185,7 +185,10 @@
       </div>
 
       <div class="form-wrap reveal" style="max-width:860px;margin-inline:auto;">
-        <form id="quote-form" novalidate data-ghl-form data-form-name="Quote Request Form">
+        <form id="quote-form" novalidate data-lead-form method="POST" action="https://vision.leadrai.com/api/forms/a0a587b54f7e8cadafac1d1f9f7c9493">
+          <input type="hidden" name="_form" value="Quote request">
+          <input type="hidden" name="_page" data-page-url value="">
+          <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" style="display:none">
           <div class="form-grid">
             <div class="field">
               <label for="name">Your name <span class="req" aria-hidden="true">*</span></label>
@@ -207,13 +210,13 @@
 
             <div class="field">
               <label for="address">Service address or area</label>
-              <input type="text" id="address" name="address" autocomplete="street-address" placeholder="Street, city or neighborhood">
+              <input type="text" id="address" name="Service address or area" autocomplete="street-address" placeholder="Street, city or neighborhood">
               <span class="error" aria-live="polite"></span>
             </div>
 
             <div class="field">
               <label for="service">What do you need?</label>
-              <select id="service" name="service">
+              <select id="service" name="Service needed">
                 <option value="">Select a service</option>
                 <option>Furniture &amp; appliance removal</option>
                 <option>Property cleanout</option>
@@ -229,7 +232,7 @@
 
             <div class="field">
               <label for="load">Roughly how much is there?</label>
-              <select id="load" name="load">
+              <select id="load" name="Load size">
                 <option value="">Select a size</option>
                 <option>A single item</option>
                 <option>A few items (pickup truck load)</option>
@@ -243,20 +246,14 @@
 
             <div class="field field--full">
               <label for="timing">When would you like it done?</label>
-              <input type="text" id="timing" name="timing" placeholder="As soon as possible, this weekend, a specific date...">
+              <input type="text" id="timing" name="Preferred timing" placeholder="As soon as possible, this weekend, a specific date...">
               <span class="error" aria-live="polite"></span>
             </div>
 
             <div class="field field--full">
               <label for="details">Details <span class="req" aria-hidden="true">*</span></label>
-              <textarea id="details" name="details" required placeholder="Tell us what needs to go, where it is (upstairs, basement, back yard), and anything about access or parking we should know."></textarea>
+              <textarea id="details" name="Details" required placeholder="Tell us what needs to go, where it is (upstairs, basement, back yard), and anything about access or parking we should know."></textarea>
               <span class="error" aria-live="polite"></span>
-            </div>
-
-            <!-- Simple bot trap, hidden from people -->
-            <div class="honeypot" aria-hidden="true">
-              <label for="company_website">Leave this field empty</label>
-              <input type="text" id="company_website" name="company_website" tabindex="-1" autocomplete="off">
             </div>
           </div>
 

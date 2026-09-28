@@ -131,12 +131,21 @@
 
   /* ----------------------------------------------------------------------
      Contact / quote forms
-     Every form marked with [data-ghl-form] posts to /api/ghl-lead, which
-     creates or updates the contact in the GoHighLevel sub-account, tags it
-     "website-lead" and stores the message. A thank-you note is shown in place.
+     Every form marked with [data-lead-form] posts to the LeadrVision forms
+     endpoint given in its own action attribute. JavaScript submits with
+     fetch() to the same URL and shows a thank-you note in place; without
+     JavaScript the plain HTML POST still works and the visitor comes back
+     to the page with ?submitted=1, which shows the same confirmation.
      ---------------------------------------------------------------------- */
+  var FORM_ENDPOINT = "https://vision.leadrai.com/api/forms/a0a587b54f7e8cadafac1d1f9f7c9493";
+
+  function thanksMessage(firstName) {
+    return "Thanks" + (firstName ? ", " + firstName : "") + "! Your request is in — we've got your details " +
+      "and will get back to you with a price shortly. Need us sooner? Call or text +1 (458) 867-8037.";
+  }
+
   function initForm() {
-    Array.prototype.forEach.call(document.querySelectorAll("[data-ghl-form]"), initLeadForm);
+    Array.prototype.forEach.call(document.querySelectorAll("[data-lead-form]"), initLeadForm);
   }
 
   function initLeadForm(form) {
@@ -145,8 +154,13 @@
     var status = form.querySelector(".form-status") || document.getElementById("form-status");
     var submitBtn = form.querySelector('button[type="submit"]');
     var submitLabel = submitBtn ? submitBtn.textContent : "";
-    var endpoint = form.getAttribute("data-endpoint") || "/api/ghl-lead";
-    var formName = form.getAttribute("data-form-name") || "Website Form";
+    var endpoint = form.getAttribute("action") || FORM_ENDPOINT;
+
+    // Stamp the current page so the visitor is returned here after a plain
+    // (no-JavaScript) submission, and so the fetch body carries it too.
+    Array.prototype.forEach.call(form.querySelectorAll("[data-page-url]"), function (field) {
+      field.value = window.location.href;
+    });
 
     function setError(field, message) {
       var wrap = field.closest(".field");
@@ -212,7 +226,7 @@
       e.preventDefault();
 
       // Honeypot — silently ignore obvious bots.
-      var trap = form.querySelector('input[name="company_website"]');
+      var trap = form.querySelector('input[name="_gotcha"]');
       if (trap && trap.value) return;
 
       if (!validate()) {
@@ -226,19 +240,13 @@
       function get(name) { return String(data.get(name) || "").trim(); }
 
       var firstName = get("name").split(" ")[0];
-      var payload = {
-        formName: formName,
-        pageUrl: window.location.href,
-        name: get("name"),
-        phone: get("phone"),
-        email: get("email"),
-        address: get("address"),
-        service: get("service"),
-        load: get("load"),
-        timing: get("timing"),
-        message: get("details") || get("message"),
-        company_website: get("company_website")
-      };
+
+      // Send every field under its own human-readable name, plus _form/_page.
+      var payload = {};
+      data.forEach(function (value, key) {
+        if (typeof value === "string") payload[key] = value.trim();
+      });
+      payload._page = window.location.href;
 
       function setBusy(busy) {
         if (!submitBtn) return;
@@ -264,12 +272,12 @@
         })
         .then(function () {
           setBusy(false);
-          showStatus(
-            "ok",
-            "Thanks, " + firstName + "! Your request is in — we've got your details and will get back to you " +
-            "with a price shortly. Need us sooner? Call or text +1 (458) 867-8037."
-          );
+          showStatus("ok", thanksMessage(firstName));
           form.reset();
+          // reset() clears the hidden page field — put it straight back.
+          Array.prototype.forEach.call(form.querySelectorAll("[data-page-url]"), function (field) {
+            field.value = window.location.href;
+          });
           if (status && status.scrollIntoView) {
             status.scrollIntoView({ behavior: "smooth", block: "center" });
           }
@@ -283,6 +291,23 @@
           );
         });
     });
+  }
+
+  /* ----------------------------------------------------------------------
+     Plain (no-JavaScript) submissions come back to the page with ?submitted=1
+     — show the same confirmation message.
+     ---------------------------------------------------------------------- */
+  function initSubmitted() {
+    if (!window.location.search) return;
+    var params = new URLSearchParams(window.location.search);
+    if (params.get("submitted") !== "1") return;
+
+    var status = document.querySelector(".form-status") || document.getElementById("form-status");
+    if (!status) return;
+
+    status.className = "form-status is-visible form-status--ok";
+    status.textContent = thanksMessage("");
+    if (status.scrollIntoView) status.scrollIntoView({ behavior: "smooth", block: "center" });
   }
 
   /* ----------------------------------------------------------------------
@@ -309,6 +334,7 @@
     initReveal();
     initYear();
     initForm();
+    initSubmitted();
     initPrefill();
   }
 
