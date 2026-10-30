@@ -1,5 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: sitemap.xml
-Sitemap: https://site-wild-roots-hauling-and-2144.vercel.app/sitemap.xml
