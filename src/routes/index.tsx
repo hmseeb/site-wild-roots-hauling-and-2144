@@ -2,8 +2,12 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect } from "react";
 
 import heroTrailer from "@/assets/hero-trailer.jpg";
-import beforeYard from "@/assets/before-yard.jpg";
-import afterYard from "@/assets/after-yard.jpg";
+import workYardBefore from "@/assets/work-yard-before.jpg";
+import workYardAfter from "@/assets/work-yard-after.jpg";
+import workPatioBefore from "@/assets/work-patio-before.jpg";
+import workPatioAfter from "@/assets/work-patio-after.jpg";
+import workFenceBefore from "@/assets/work-fenceline-before.jpg";
+import workFenceAfter from "@/assets/work-fenceline-after.jpg";
 import logoAsset from "@/assets/wild-roots-logo.png.asset.json";
 
 const TITLE = "Wild Roots Hauling | Junk Removal in Springfield & Eugene, OR";
@@ -46,7 +50,7 @@ export const Route = createFileRoute("/")({
           aggregateRating: {
             "@type": "AggregateRating",
             ratingValue: "5.0",
-            reviewCount: "11",
+            reviewCount: String(REVIEW_COUNT),
             bestRating: "5",
           },
         }),
@@ -106,7 +110,64 @@ const reasons = [
   },
 ];
 
-const REVIEW_COUNT = 11;
+const workPairs = [
+  {
+    title: "Yard Junk Removal",
+    caption:
+      "A backyard pile of bagged trash, cardboard, old shelving, a window frame and storage totes loaded out beside the dump trailer.",
+    aspect: "aspect-4/3",
+    before: {
+      src: workYardBefore,
+      width: 800,
+      height: 600,
+      alt: "Before: a pile of black trash bags, flattened cardboard, a white window frame, wire shelving and plastic totes heaped against a wooden fence, with the Wild Roots dump trailer backed up to the gate.",
+    },
+    after: {
+      src: workYardAfter,
+      width: 640,
+      height: 480,
+      alt: "After: the same fenced backyard with the white-signed gate and hedge cleared to open grass, the loaded dump trailer parked where the pile used to be.",
+    },
+  },
+  {
+    title: "Patio Sofa Removal",
+    caption:
+      "An oversized leather sectional sofa carried off a covered back patio; the homeowner's chairs, side table and fire pit stayed put.",
+    aspect: "aspect-3/4",
+    before: {
+      src: workPatioBefore,
+      width: 480,
+      height: 640,
+      alt: "Before: a large brown leather sectional sofa taking up a covered concrete patio next to a fire pit, wicker chairs and a round wooden table.",
+    },
+    after: {
+      src: workPatioAfter,
+      width: 480,
+      height: 640,
+      alt: "After: the same covered patio with its white post, stepping stones and green privacy screen, now clear of the sofa with only the patio chairs and fire pit remaining.",
+    },
+  },
+  {
+    title: "Fence-Line Item Removal",
+    caption:
+      "A wooden shelving unit, loose lattice panels and leftover frames cleared from the gravel strip along the side-yard fence.",
+    aspect: "aspect-3/4",
+    before: {
+      src: workFenceBefore,
+      width: 360,
+      height: 480,
+      alt: "Before: a dark wooden shelving unit, stacked white lattice panels and metal frames leaning against a lattice-topped fence along a gravel side yard.",
+    },
+    after: {
+      src: workFenceAfter,
+      width: 360,
+      height: 480,
+      alt: "After: the same lattice-topped fence beside the blue-gray house and red-leafed tree with the gravel strip completely emptied of shelving, panels and frames.",
+    },
+  },
+];
+
+const REVIEW_COUNT = 24;
 const GOOGLE_URL = "https://share.google/1oDJ2Sm7Ssnp4roVw";
 
 const reviews = [
@@ -249,7 +310,7 @@ function Index() {
 
       </nav>
 
-      <section className="relative flex h-[85vh] items-center overflow-hidden">
+      <section className="relative flex min-h-[85vh] items-center overflow-hidden py-16 md:py-20">
         <div className="absolute inset-0 z-0">
           <img
             src={heroTrailer}
@@ -273,9 +334,8 @@ function Index() {
               5.0 from {REVIEW_COUNT} Google reviews
             </span>
           </a>
-          <h1 className="mb-6 font-bebas text-6xl leading-[0.9] text-off-white drop-shadow-sm md:text-8xl">
-
-            HEAVY LIFTING FOR THE <span className="text-sage">WILLAMETTE VALLEY</span>
+          <h1 className="mb-6 font-bebas text-4xl leading-[0.95] text-balance break-words hyphens-none text-off-white drop-shadow-sm sm:text-5xl md:text-6xl lg:text-7xl">
+            Junk Removal in Springfield &amp; Eugene, Oregon
           </h1>
           <p className="mb-8 max-w-xl text-xl font-light text-off-white/90 md:text-2xl">
             Locally owned and operated junk removal, site prep, and property clearing. We handle the
@@ -301,7 +361,7 @@ function Index() {
       <section className="border-y border-off-white/10 bg-near-black px-6 py-6 md:px-12">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-x-10 gap-y-4">
           {[
-            "5.0 stars · 11 Google reviews",
+            `5.0 stars · ${REVIEW_COUNT} Google reviews`,
             "Locally owned in Springfield",
             "Licensed & insured",
             "Free, no-pressure estimates",
@@ -353,33 +413,47 @@ function Index() {
         <div className="mx-auto max-w-7xl">
           <h2 className="mb-16 text-center font-bebas text-5xl md:text-6xl">WORK IN PROGRESS</h2>
           <div className="grid gap-12 md:grid-cols-2">
-            <div className="space-y-6">
-              <div className="relative">
-                <img
-                  src={beforeYard}
-                  alt="Backyard filled with debris, old furniture and scrap metal before cleanup"
-                  width={1024}
-                  height={768}
-                  loading="lazy"
-                  className="aspect-4/3 w-full object-cover"
-                />
-                <span className="absolute left-4 top-4 bg-near-black px-4 py-1 font-bebas text-xl text-off-white">
-                  BEFORE
-                </span>
-              </div>
-              <div className="relative">
-                <img
-                  src={afterYard}
-                  alt="The same backyard fully cleared with clean grass after Wild Roots Hauling"
-                  width={1024}
-                  height={768}
-                  loading="lazy"
-                  className="aspect-4/3 w-full object-cover"
-                />
-                <span className="absolute left-4 top-4 bg-moss px-4 py-1 font-bebas text-xl text-off-white">
-                  AFTER
-                </span>
-              </div>
+            <div className="space-y-10">
+              {workPairs.map((pair) => (
+                <figure key={pair.title}>
+                  <div className="grid grid-cols-2 gap-2 sm:gap-4">
+                    <div className="relative">
+                      <img
+                        src={pair.before.src}
+                        alt={pair.before.alt}
+                        width={pair.before.width}
+                        height={pair.before.height}
+                        loading="lazy"
+                        decoding="async"
+                        sizes="(min-width: 768px) 25vw, 45vw"
+                        className={`${pair.aspect} w-full object-cover`}
+                      />
+                      <span className="absolute left-2 top-2 bg-near-black px-3 py-1 font-bebas text-lg text-off-white sm:left-4 sm:top-4 sm:px-4 sm:text-xl">
+                        BEFORE
+                      </span>
+                    </div>
+                    <div className="relative">
+                      <img
+                        src={pair.after.src}
+                        alt={pair.after.alt}
+                        width={pair.after.width}
+                        height={pair.after.height}
+                        loading="lazy"
+                        decoding="async"
+                        sizes="(min-width: 768px) 25vw, 45vw"
+                        className={`${pair.aspect} w-full object-cover`}
+                      />
+                      <span className="absolute left-2 top-2 bg-moss px-3 py-1 font-bebas text-lg text-off-white sm:left-4 sm:top-4 sm:px-4 sm:text-xl">
+                        AFTER
+                      </span>
+                    </div>
+                  </div>
+                  <figcaption className="mt-3">
+                    <span className="block font-bebas text-2xl leading-none">{pair.title}</span>
+                    <span className="mt-1 block text-sm text-near-black/70">{pair.caption}</span>
+                  </figcaption>
+                </figure>
+              ))}
             </div>
             <div className="flex flex-col justify-center space-y-8">
               <div className="border-l-4 border-moss pl-8">
