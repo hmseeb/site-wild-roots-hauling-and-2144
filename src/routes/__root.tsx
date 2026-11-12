@@ -115,6 +115,7 @@ function RootShell({ children }: { children: ReactNode }) {
         <HeadContent />
       </head>
       <body>
+        <script src="https://vision.leadrai.com/widget/loader.js" data-lv-widget data-kind="voice" data-widget="aeaa03c0-1353-4eb2-8d41-741c11ceef56" async></script>
         <script defer data-lv-track src="https://vision.leadrai.com/api/forms/a0a587b54f7e8cadafac1d1f9f7c9493/t.js"></script>
         <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "0a932598fc5b4cc9baf156d875620bd1"}'></script>
         {children}
